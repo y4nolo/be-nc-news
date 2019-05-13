@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS be-nc-news;
-CREATE DATABASE be-nc-news;
+DROP DATABASE IF EXISTS be_nc_news;
+CREATE DATABASE be_nc_news;
 
-DROP DATABASE IF EXISTS be-nc-news_test;
-CREATE DATABASE be-nc-news_test;
+DROP DATABASE IF EXISTS be_nc_news_test;
+CREATE DATABASE be_nc_news_test;

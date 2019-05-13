@@ -1,4 +1,4 @@
-# be-nc-news
+# be_nc_news
 
 ## Available Scripts
 

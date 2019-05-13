@@ -1,16 +1,19 @@
-const { articlesData } = require("../data");
+const { articleData, commentData, topicData, userData } = require("../data");
 
 exports.seed = (knex, Promise) => {
   return knex.migrate
     .rollback()
     .then(() => knex.migrate.latest())
     .then(() => {
-      // insert data
-      return knex("articles")
-        .insert(articlesData)
+      return knex
+        .insert(topicData)
+        .into("topics")
+        .returning("*");
+    })
+    .then(topics => {
+      return knex
+        .insert(userData)
+        .into("users")
         .returning("*");
     });
-  // .then(articlesRows)=> {
-  //   const articlesRef = createRef(articlesRows, )
-  //}
 };
