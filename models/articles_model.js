@@ -55,4 +55,12 @@ exports.modifyArticleById = ({ article_id, inc_votes = 0 }) => {
     .returning("*");
 };
 
-exports.getCommentsByArticleId = ({}) => {};
+exports.getCommentsByArticleId = ({ article_id, sort_by, order }) => {
+  return connection
+    .select("comment_id", "votes", "created_at", "author", "body")
+    .from("comments")
+    .modify(query => {
+      if (article_id) query.where("comments.article_id", "=", article_id);
+    })
+    .orderBy(sort_by || "created_at", "desc");
+};

@@ -21,7 +21,7 @@ articlesRouter
   .all(methodNotAllowed);
 
 articlesRouter
-  .route("//:article_id/comments")
+  .route("/:article_id/comments")
   .get(sendCommentsByArticleId)
   .all(methodNotAllowed);
 module.exports = articlesRouter;

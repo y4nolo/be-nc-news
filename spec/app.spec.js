@@ -91,16 +91,34 @@ describe.only("/", () => {
 
   //patch articles by id - increment votes
   describe("/api/articles/:article_id", () => {
-    it("GET status: 204, responds modified article vote", () => {
+    it("GET status: 200, responds modified article vote", () => {
       return request
         .patch("/api/articles/1")
         .send({ inc_votes: 1 })
         .expect(200)
         .then(({ body }) => {
-          console.log(body.article);
           expect(body.article).to.contain({
             votes: 1
           });
+        });
+    });
+  });
+  //get comments by article id - returns all comments under a requested article
+
+  describe("/api/articles/:article_id", () => {
+    it("GET status: 200, responds with all comments for a given article ID", () => {
+      return request
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments[0]).to.contain.keys(
+            "comment_id",
+            "votes",
+            "created_at",
+            "author",
+            "body"
+          );
+          // expect(body.comments).to.be.sortedBy("created_at");
         });
     });
   });
