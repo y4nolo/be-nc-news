@@ -61,8 +61,46 @@ describe.only("/", () => {
         .get("/api/articles?sort_by=author")
         .expect(200)
         .then(({ body }) => {
-          console.log(body);
+          // console.log(body);
           expect(body.articles).to.be.sortedBy("author");
+        });
+    });
+  });
+
+  //get articles by ID
+  describe("/api/articles/:article_id", () => {
+    it("GET status:200, responds with a specific article", () => {
+      return request
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).to.eql({
+            article_id: 1,
+            author: "jessjelly",
+            title: "Running a Node App",
+            topic: "coding",
+            body:
+              "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+            created_at: "2016-08-18T12:07:52.000Z",
+            votes: 0,
+            comment_count: "8"
+          });
+        });
+    });
+  });
+
+  //patch articles by id - increment votes
+  describe("/api/articles/:article_id", () => {
+    it("GET status: 204, responds modified article vote", () => {
+      return request
+        .patch("/api/articles/1")
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body.article);
+          expect(body.article).to.contain({
+            votes: 1
+          });
         });
     });
   });

@@ -1,4 +1,9 @@
-const { getAllArticles } = require("../models/articles_model");
+const {
+  getAllArticles,
+  getArticleById,
+  modifyArticleById,
+  getCommentsByArticleId
+} = require("../models/articles_model");
 
 exports.sendArticles = (req, res, next) => {
   const { sort_by } = req.query;
@@ -12,6 +17,32 @@ exports.sendArticles = (req, res, next) => {
     });
 };
 
-function addTwo(a) {
-  return a + 2;
-}
+exports.sendArticlebyId = (req, res, next) => {
+  getArticleById({ ...req.query, ...req.params })
+    .then(article => {
+      res.status(200).send({ article });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+exports.patchArticleById = (req, res, next) => {
+  modifyArticleById({ ...req.body, ...req.params })
+    .then(articles => {
+      res.status(200).send({ article: articles[0] });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+exports.sendCommentsByArticleId = (req, res, next) => {
+  getCommentsByArticleId({ ...req.body, ...req.params })
+    .then(article => {
+      res.status(200).send({ article });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
