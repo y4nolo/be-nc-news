@@ -76,14 +76,13 @@ describe.only("/", () => {
         .then(({ body }) => {
           expect(body.article).to.eql({
             article_id: 1,
-            author: "jessjelly",
-            title: "Running a Node App",
-            topic: "coding",
-            body:
-              "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
-            created_at: "2016-08-18T12:07:52.000Z",
-            votes: 0,
-            comment_count: "8"
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            comment_count: "13",
+            created_at: "2018-11-15T12:21:54.000Z",
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            votes: 100
           });
         });
     });
@@ -98,7 +97,7 @@ describe.only("/", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.article).to.contain({
-            votes: 1
+            votes: 101
           });
         });
     });
@@ -118,7 +117,37 @@ describe.only("/", () => {
             "author",
             "body"
           );
-          // expect(body.comments).to.be.sortedBy("created_at");
+          expect(body.comments).to.be.descendingBy("created_at");
+        });
+    });
+    it("GET status: 200, responds with all comments for a given article ID, can be orderd by any valid column", () => {
+      return request
+        .get("/api/articles/1/comments?sort_by=author")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments[0]).to.contain.keys(
+            "comment_id",
+            "votes",
+            "created_at",
+            "author",
+            "body"
+          );
+          expect(body.comments).to.be.descendingBy("author");
+        });
+    });
+    it('"GET status: 200, posts a comment to a given article ID', () => {
+      return request
+        .post("/api/articles/1/comments")
+        .send({
+          username: "butter_bridge",
+          body: "This is a great test comment"
+        })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments[0]).to.contain({
+            author: "butter_bridge",
+            body: "This is a great test comment"
+          });
         });
     });
   });

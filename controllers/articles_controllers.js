@@ -2,7 +2,8 @@ const {
   getAllArticles,
   getArticleById,
   modifyArticleById,
-  getCommentsByArticleId
+  getCommentsByArticleId,
+  addCommentsByArticleId
 } = require("../models/articles_model");
 
 exports.sendArticles = (req, res, next) => {
@@ -38,7 +39,20 @@ exports.patchArticleById = (req, res, next) => {
 };
 
 exports.sendCommentsByArticleId = (req, res, next) => {
-  getCommentsByArticleId({ ...req.body, ...req.params })
+  const { sort_by, order } = req.query;
+  console.log(req.query);
+  getCommentsByArticleId({ sort_by, order })
+    .then(comments => {
+      res.status(200).send({ comments });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+exports.postCommentByArticleId = (req, res, next) => {
+  const { username, body } = req.body;
+  addCommentsByArticleId({ ...req.body, ...req.params })
     .then(comments => {
       res.status(200).send({ comments });
     })

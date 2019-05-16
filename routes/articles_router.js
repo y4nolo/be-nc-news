@@ -7,6 +7,9 @@ const { patchArticleById } = require("../controllers/articles_controllers");
 const {
   sendCommentsByArticleId
 } = require("../controllers/articles_controllers");
+const {
+  postCommentByArticleId
+} = require("../controllers/articles_controllers");
 
 const { methodNotAllowed } = require("../errors/index");
 articlesRouter
@@ -23,5 +26,7 @@ articlesRouter
 articlesRouter
   .route("/:article_id/comments")
   .get(sendCommentsByArticleId)
+  .post(postCommentByArticleId)
   .all(methodNotAllowed);
+
 module.exports = articlesRouter;
