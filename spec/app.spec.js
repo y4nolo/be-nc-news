@@ -90,7 +90,7 @@ describe.only("/", () => {
 
   //patch articles by id - increment votes
   describe("/api/articles/:article_id", () => {
-    it("GET status: 200, responds modified article vote", () => {
+    it("PATCH status: 200, responds modified article vote", () => {
       return request
         .patch("/api/articles/1")
         .send({ inc_votes: 1 })
@@ -148,6 +148,29 @@ describe.only("/", () => {
             author: "butter_bridge",
             body: "This is a great test comment"
           });
+        });
+    });
+  });
+
+  //patch comments by comment id - increases or decreases votes on a comment
+  describe("/api/comments/:comment_id", () => {
+    it("PATCH status: 200, responds modified comment vote", () => {
+      return request
+        .patch("/api/comments/1")
+        .send({ inc_votes: 10 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).to.contain({
+            votes: 26
+          });
+        });
+    });
+    it("DELETE /comments - status: 204, deletes the specified house ", () => {
+      return request
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body.comment).to.equal(undefined);
         });
     });
   });
