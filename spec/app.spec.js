@@ -174,4 +174,15 @@ describe.only("/", () => {
         });
     });
   });
+
+  describe("/api/users/:username", () => {
+    it("GET status:200, reponds with an specified user object", () => {
+      return request
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user).to.contain.keys("username", "avatar_url", "name");
+        });
+    });
+  });
 });
