@@ -15,7 +15,7 @@ exports.sendComments = (req, res, next) => {
 exports.patchCommentById = (req, res, next) => {
   modifyCommentById({ ...req.body, ...req.params })
     .then(comments => {
-      res.status(200).send({ comment: comments[0] });
+      res.status(202).send({ comment: comments[0] });
     })
     .catch(err => {
       console.log(err);

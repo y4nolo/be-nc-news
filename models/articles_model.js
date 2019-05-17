@@ -1,6 +1,6 @@
 const connection = require("../db/connection");
 
-exports.getAllArticles = (sort_by = "created_at") => {
+exports.getAllArticles = (sort_by = "created_at", order) => {
   return connection
     .select(
       "articles.article_id",
@@ -15,7 +15,11 @@ exports.getAllArticles = (sort_by = "created_at") => {
     .count({ comment_count: "articles.article_id" })
     .leftJoin("comments", "comments.article_id", "=", "articles.article_id")
     .groupBy("articles.article_id")
-    .orderBy(`articles.${sort_by}`, "asc");
+    .orderBy(
+      `articles.${sort_by}`,
+      "asc" || `articles.${order}`,
+      "desc" || "asc"
+    );
 };
 
 /* ./models/films.js

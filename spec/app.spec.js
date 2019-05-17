@@ -10,7 +10,7 @@ const request = supertest(app);
 const chaiSorted = require("chai-sorted");
 chai.use(chaiSorted);
 
-describe.only("/", () => {
+describe("/", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
@@ -61,128 +61,152 @@ describe.only("/", () => {
         .get("/api/articles?sort_by=author")
         .expect(200)
         .then(({ body }) => {
-          // console.log(body);
           expect(body.articles).to.be.sortedBy("author");
         });
     });
-  });
-
-  //get articles by ID
-  describe("/api/articles/:article_id", () => {
-    it("GET status:200, responds with a specific article", () => {
+    it("responds with the articles ordered by a specific query - topic", () => {
       return request
-        .get("/api/articles/1")
+        .get("/api/articles?sort_by=topic")
         .expect(200)
         .then(({ body }) => {
-          expect(body.article).to.eql({
-            article_id: 1,
-            author: "butter_bridge",
-            body: "I find this existence challenging",
-            comment_count: "13",
-            created_at: "2018-11-15T12:21:54.000Z",
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            votes: 100
+          expect(body.articles).to.be.sortedBy("topic");
+        });
+    });
+    it("responds with the articles ordered by a specific query - created_at", () => {
+      return request
+        .get("/api/articles?sort_by=created_at")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.be.sortedBy("created_at");
+        });
+    });
+    //error bad sort request
+    xit("responds with a error message when ordered by a specific invalid query - date ", () => {
+      return request
+        .get("/api/articles?sort_by=a")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.eql("Bad Request");
+        });
+    });
+
+    //get articles by ID
+    describe("/api/articles/:article_id", () => {
+      it("GET status:200, responds with a specific article", () => {
+        return request
+          .get("/api/articles/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.eql({
+              article_id: 1,
+              author: "butter_bridge",
+              body: "I find this existence challenging",
+              comment_count: "13",
+              created_at: "2018-11-15T12:21:54.000Z",
+              title: "Living in the shadow of a great man",
+              topic: "mitch",
+              votes: 100
+            });
           });
-        });
+      });
     });
-  });
 
-  //patch articles by id - increment votes
-  describe("/api/articles/:article_id", () => {
-    it("PATCH status: 200, responds modified article vote", () => {
-      return request
-        .patch("/api/articles/1")
-        .send({ inc_votes: 1 })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.article).to.contain({
-            votes: 101
+    //patch articles by id - increment votes
+    describe("/api/articles/:article_id", () => {
+      it("PATCH status: 202, responds modified article vote", () => {
+        return request
+          .patch("/api/articles/1")
+          .send({ inc_votes: 1 })
+          .expect(202)
+          .then(({ body }) => {
+            expect(body.article).to.contain({
+              votes: 101
+            });
           });
-        });
+      });
     });
-  });
-  //get comments by article id - returns all comments under a requested article
+    //get comments by article id - returns all comments under a requested article
 
-  describe("/api/articles/:article_id", () => {
-    it("GET status: 200, responds with all comments for a given article ID", () => {
-      return request
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.comments[0]).to.contain.keys(
-            "comment_id",
-            "votes",
-            "created_at",
-            "author",
-            "body"
-          );
-          expect(body.comments).to.be.descendingBy("created_at");
-        });
-    });
-    it("GET status: 200, responds with all comments for a given article ID, can be orderd by any valid column", () => {
-      return request
-        .get("/api/articles/1/comments?sort_by=author")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.comments[0]).to.contain.keys(
-            "comment_id",
-            "votes",
-            "created_at",
-            "author",
-            "body"
-          );
-          expect(body.comments).to.be.descendingBy("author");
-        });
-    });
-    it('"GET status: 200, posts a comment to a given article ID', () => {
-      return request
-        .post("/api/articles/1/comments")
-        .send({
-          username: "butter_bridge",
-          body: "This is a great test comment"
-        })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.comments[0]).to.contain({
-            author: "butter_bridge",
+    describe("/api/articles/:article_id", () => {
+      it("GET status: 200, responds with all comments for a given article ID", () => {
+        return request
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments[0]).to.contain.keys(
+              "comment_id",
+              "votes",
+              "created_at",
+              "author",
+              "body"
+            );
+            expect(body.comments).to.be.descendingBy("created_at");
+          });
+      });
+      it("GET status: 200, responds with all comments for a given article ID, can be orderd by any valid column", () => {
+        return request
+          .get("/api/articles/1/comments?sort_by=author")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments[0]).to.contain.keys(
+              "comment_id",
+              "votes",
+              "created_at",
+              "author",
+              "body"
+            );
+            expect(body.comments).to.be.descendingBy("author");
+          });
+      });
+      it('"POSTS status: 201, posts a comment to a given article ID', () => {
+        return request
+          .post("/api/articles/1/comments")
+          .send({
+            username: "butter_bridge",
             body: "This is a great test comment"
+          })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comments[0]).to.contain({
+              author: "butter_bridge",
+              body: "This is a great test comment"
+            });
           });
-        });
+      });
     });
-  });
 
-  //patch comments by comment id - increases or decreases votes on a comment
-  describe("/api/comments/:comment_id", () => {
-    it("PATCH status: 200, responds modified comment vote", () => {
-      return request
-        .patch("/api/comments/1")
-        .send({ inc_votes: 10 })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.comment).to.contain({
-            votes: 26
+    //patch comments by comment id - increases or decreases votes on a comment
+    describe("/api/comments/:comment_id", () => {
+      it("PATCH status: 202, responds modified comment vote", () => {
+        return request
+          .patch("/api/comments/1")
+          .send({ inc_votes: 10 })
+          .expect(202)
+          .then(({ body }) => {
+            expect(body.comment).to.contain({
+              votes: 26
+            });
           });
-        });
+      });
+      it("DELETE /comments - status: 204, deletes the specified house ", () => {
+        return request
+          .delete("/api/comments/1")
+          .expect(204)
+          .then(({ body }) => {
+            expect(body.comment).to.equal(undefined);
+          });
+      });
     });
-    it("DELETE /comments - status: 204, deletes the specified house ", () => {
-      return request
-        .delete("/api/comments/1")
-        .expect(204)
-        .then(({ body }) => {
-          expect(body.comment).to.equal(undefined);
-        });
-    });
-  });
 
-  describe("/api/users/:username", () => {
-    it("GET status:200, reponds with an specified user object", () => {
-      return request
-        .get("/api/users/butter_bridge")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.user).to.contain.keys("username", "avatar_url", "name");
-        });
+    describe("/api/users/:username", () => {
+      it("GET status:200, reponds with an specified user object", () => {
+        return request
+          .get("/api/users/butter_bridge")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.user).to.contain.keys("username", "avatar_url", "name");
+          });
+      });
     });
   });
 });

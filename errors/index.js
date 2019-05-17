@@ -1,3 +1,5 @@
+//just added
+
 exports.routeNotFound = (req, res) => {
   res.status(404).send({ msg: "Route Not Found" });
 };
@@ -6,14 +8,35 @@ exports.methodNotAllowed = (req, res) => {
   res.status(405).send({ msg: "Method Not Allowed" });
 };
 
+exports.badrequest = (err, req, res, next) => {
+  if (err.code === 42703) {
+    res.status(400).send({ msg: "Bad Request" });
+  } else next(err);
+};
+
 exports.handle500 = (err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 };
 
-//app.use(err,req,res,next) - takes to next piece of error handling middleware
+//endpoint to handle potential queries of topics - there is no sub router to topic!!! - does not need to be tested
+// exports.topicNotFound = (req, res, next) => {
+//   const { slug } = req.query;
+//   Promise.all([checkTopicExists(slug)]).then(
+//     [slug]
+//       .then(([slug]) => {
+//         if (!slug) {
+//           return Promise.reject({ status: 404, msg: "Topic Not Found " });
+//         } else return req.query;
+//       })
+//       .then(topics => {
+//         res.status(200).send({ topics });
+//       })
+//       .catch(next)
+//   );
+// };
 
-//204 - deletes specified house removes all associated students from the db
+//endpoint to handle potential queries of articles ids
 
-// 400 - responsds with bad request e.g. trying to delete a 'house with a nonsense string/invalid ID format instead of numerical house ID
-// - beware promise can be rejected - and goes to .then and catch before error handling (throws an error instead of going to error handling)
+//endpoint to handle potential queries of comments belonging to articles
+
+//endpoint to handle potential queries of users

@@ -7,15 +7,13 @@ const {
 } = require("../models/articles_model");
 
 exports.sendArticles = (req, res, next) => {
-  const { sort_by } = req.query;
+  const { sort_by, order } = req.query;
 
-  getAllArticles(sort_by)
+  getAllArticles(sort_by, order)
     .then(articles => {
       return res.status(200).send({ articles });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
 exports.sendArticlebyId = (req, res, next) => {
@@ -31,7 +29,7 @@ exports.sendArticlebyId = (req, res, next) => {
 exports.patchArticleById = (req, res, next) => {
   modifyArticleById({ ...req.body, ...req.params, ...req.query })
     .then(articles => {
-      res.status(200).send({ article: articles[0] });
+      res.status(202).send({ article: articles[0] });
     })
     .catch(err => {
       console.log(err);
@@ -40,7 +38,6 @@ exports.patchArticleById = (req, res, next) => {
 
 exports.sendCommentsByArticleId = (req, res, next) => {
   const { sort_by, order } = req.query;
-  console.log(req.query);
   getCommentsByArticleId({ sort_by, order })
     .then(comments => {
       res.status(200).send({ comments });
@@ -54,7 +51,7 @@ exports.postCommentByArticleId = (req, res, next) => {
   const { username, body } = req.body;
   addCommentsByArticleId({ ...req.body, ...req.params })
     .then(comments => {
-      res.status(200).send({ comments });
+      res.status(201).send({ comments });
     })
     .catch(err => {
       console.log(err);
