@@ -76,12 +76,12 @@ exports.getCommentsByArticleId = (article_id, sort_by, order) => {
 
 exports.addCommentsByArticleId = newComment => {
   return connection("comments")
-    .where("comments.article_id", "=", [article_id])
+    .where("comments.article_id", "=", newComment.article_id)
     .insert(newComment)
-    .returning("*")
-    .modify(query => {
-      if ([article_id]) query.where("comments.article_id", "=", [article_id]);
-    });
+    .returning("*");
+  // .modify(query => {
+  //   if (article_id) query.where("comments.article_id", "=", [article_id]);
+  // });
 };
 /* ./models/films.js
 const connection = require('../db/connection');

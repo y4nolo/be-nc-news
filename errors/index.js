@@ -3,6 +3,7 @@ exports.methodNotAllowed = (req, res) => {
 };
 
 exports.handleSQLErrors = (err, req, res, next) => {
+  console.log(err);
   const codes = {
     "22P02": "id must be type integer",
     "42703": "query input does not exist",

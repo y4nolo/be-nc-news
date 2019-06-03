@@ -244,17 +244,16 @@ describe("/", () => {
             expect(body.msg).to.eql("id must be type integer");
           });
       });
-      it("GET status: 400, fails to respond with all comments for a invalid article ID i.e. 99989 ", () => {
-        const articleID = 99989;
+      //error post
+      it("GET status: 400, fails to respond with all comments for a invalid article ID i.e. banana ", () => {
         return request
-          .get(`/api/articles/${articleID}/comments`)
-          .expect(404)
+          .get(`/api/articles/banana/comments`)
+          .expect(400)
           .then(({ body }) => {
-            expect(body.msg).to.eql("Route Not Found");
+            expect(body.msg).to.eql("id must be type integer");
           });
       });
 
-      //error post
       it("POSTS status: 400, fails to post a comment to a invalid article ID", () => {
         return request
           .post("/api/articles/9999/comments")
@@ -262,9 +261,9 @@ describe("/", () => {
             username: "butter_bridge",
             body: "This is a terrible test comment"
           })
-          .expect(400)
+          .expect(404)
           .then(({ body }) => {
-            expect(body.msg).to.eql("Bad Request");
+            expect(body.msg).to.eql("article not found");
           });
       });
     });

@@ -57,10 +57,10 @@ exports.postCommentByArticleId = (req, res, next) => {
   const { username, body } = req.body;
   const author = username;
   const newComment = { author, body, article_id };
-  addNewComment(newComment)
+  addCommentsByArticleId(newComment)
     .then(([comment]) => {
       if (!comment.body.length) {
-        return Promise.reject({ code: 4003 });
+        return next({ code: 4003 });
       }
       res.status(201).send({ comment });
     })
