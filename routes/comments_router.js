@@ -13,5 +13,4 @@ commentsRouter
   .patch(patchCommentById)
   .delete(deleteCommentById)
   .all(methodNotAllowed);
-
 module.exports = commentsRouter;

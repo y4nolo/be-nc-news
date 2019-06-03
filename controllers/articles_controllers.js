@@ -7,53 +7,62 @@ const {
 } = require("../models/articles_model");
 
 exports.sendArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-
-  getAllArticles(sort_by, order)
+  const { sort_by, order, author, topic } = req.query;
+  getAllArticles(sort_by, order, author, topic)
     .then(articles => {
-      return res.status(200).send({ articles });
+      if (articles.length > 0) return res.status(200).send({ articles });
+      else return res.status(404).send({ msg: "Articles Not Found" });
     })
     .catch(next);
 };
 
 exports.sendArticlebyId = (req, res, next) => {
+  const { article_id } = req.params;
+
   getArticleById({ ...req.query, ...req.params })
     .then(article => {
+      if (!article) {
+        return next({ code: 4041 });
+      }
       res.status(200).send({ article });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
 exports.patchArticleById = (req, res, next) => {
-  modifyArticleById({ ...req.body, ...req.params, ...req.query })
-    .then(articles => {
-      res.status(202).send({ article: articles[0] });
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  modifyArticleById(article_id, inc_votes)
+    .then(article => {
+      if (!article.article) {
+        return next({ code: 4002 });
+      }
+      res.status(200).send(article);
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
 exports.sendCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
   const { sort_by, order } = req.query;
-  getCommentsByArticleId({ sort_by, order })
+  getCommentsByArticleId(article_id, sort_by, order)
     .then(comments => {
       res.status(200).send({ comments });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
   const { username, body } = req.body;
-  addCommentsByArticleId({ ...req.body, ...req.params })
-    .then(comments => {
-      res.status(201).send({ comments });
+  const author = username;
+  const newComment = { author, body, article_id };
+  addNewComment(newComment)
+    .then(([comment]) => {
+      if (!comment.body.length) {
+        return Promise.reject({ code: 4003 });
+      }
+      res.status(201).send({ comment });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };

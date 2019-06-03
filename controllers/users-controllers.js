@@ -1,12 +1,21 @@
-const { getUsers } = require("../models/users_model");
+const { getUser, fetchAllUsers } = require("../models/users_model");
 
-exports.sendUsers = (req, res, next) => {
-  const { username } = req.params;
-  getUsers({ username })
-    .then(([user]) => {
-      return res.status(200).send({ user });
+exports.getAllUsers = (req, res, next) => {
+  fetchAllUsers()
+    .then(users => {
+      res.status(200).send({ users });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
+};
+
+exports.sendUser = (req, res, next) => {
+  const { username } = req.params;
+  getUser(username)
+    .then(user => {
+      if (!user) {
+        return next({ code: 4043 });
+      }
+      res.status(200).send({ user });
+    })
+    .catch(next);
 };

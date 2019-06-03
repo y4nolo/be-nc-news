@@ -1,13 +1,17 @@
 const express = require("express");
 const usersRouter = express.Router();
 
-const { sendUsers } = require("../controllers/users-controllers");
+const { sendUser, getAllUsers } = require("../controllers/users-controllers");
 
 const { methodNotAllowed } = require("../errors/index");
 
 usersRouter
-  .route("/:username")
-  .get(sendUsers)
+  .route("/")
+  .get(getAllUsers)
   .all(methodNotAllowed);
 
+usersRouter
+  .route("/:username")
+  .get(sendUser)
+  .all(methodNotAllowed);
 module.exports = usersRouter;

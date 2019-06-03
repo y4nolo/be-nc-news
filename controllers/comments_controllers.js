@@ -5,29 +5,31 @@ const { removeCommentById } = require("../models/comments_model");
 exports.sendComments = (req, res, next) => {
   getComments()
     .then(comments => {
-      return res.status(200).send({ comments });
+      if (comments.length > 0) return res.status(200).send({ comments });
+      else return res.status(404).send({ msg: "Comments Not Found" });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
 exports.patchCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
   modifyCommentById({ ...req.body, ...req.params })
     .then(comments => {
-      res.status(202).send({ comment: comments[0] });
+      if ([comment_id] === "comments.comment_id")
+        return res.status(200).send({
+          comment: comments[0]
+        });
+      else return res.status(404).send({ msg: "Comment Not Found" });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
 exports.deleteCommentById = (req, res, next) => {
   removeCommentById({ ...req.body, ...req.params })
-    .then(comments => {
-      res.status(204).send({ comment: comments[0] });
+    .then(numberOfDeletions => {
+      if (numberOfDeletions > 0) res.sendStatus(204);
+      else res.status(404).send({ msg: "Comment Not Found" });
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(next);
 };

@@ -1,8 +1,15 @@
 const connection = require("../db/connection");
 
-exports.getUsers = username => {
+exports.fetchAllUsers = () => {
+  return connection.select("*").from("users");
+};
+
+exports.getUser = username => {
   return connection
     .select("*")
     .from("users")
-    .where(username, "=", "username");
+    .where("users.username", "=", username)
+    .then(([user]) => {
+      return user;
+    });
 };

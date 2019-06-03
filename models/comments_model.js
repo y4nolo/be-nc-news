@@ -11,8 +11,16 @@ exports.modifyCommentById = ({ comment_id, inc_votes = 0 }) => {
     .returning("*");
 };
 
-exports.removeCommentById = () => {
+exports.removeCommentById = ({ comment_id }) => {
   return connection("comments")
-    .where(({ comment_id } = true))
+    .where({ comment_id }, true)
     .del();
 };
+
+// connection("comments")
+//   // .modify(query => {
+//   //   if ({ comment_id })
+//   //     query.where("comments.comment_id", "=", { comment_id });
+//   // })
+//   .where("comment_id", comment_id)
+//   .del()
