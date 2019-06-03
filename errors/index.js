@@ -1,3 +1,5 @@
+const data = { test, development, production: development };
+
 exports.methodNotAllowed = (req, res) => {
   res.status(405).send({ msg: "Method Not Allowed" });
 };
