@@ -3,14 +3,19 @@ const {
   getArticleById,
   modifyArticleById,
   getCommentsByArticleId,
-  addCommentsByArticleId
+  addCommentsByArticleId,
+  getArticlesTotal
 } = require("../models/articles_model");
 
 exports.sendArticles = (req, res, next) => {
-  const { sort_by, order, author, topic } = req.query;
-  getAllArticles(sort_by, order, author, topic)
-    .then(articles => {
-      if (articles.length > 0) return res.status(200).send({ articles });
+  const { sort_by, order, author, topic, limit, p } = req.query;
+  Promise.all([
+    getArticlesTotal(author, topic),
+    getAllArticles(sort_by, order, author, topic, limit, p)
+  ])
+    .then(([total_count, articles]) => {
+      if (articles.length > 0)
+        return res.status(200).send({ total_count, articles });
       else return res.status(404).send({ msg: "Articles Not Found" });
     })
     .catch(next);
