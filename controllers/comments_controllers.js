@@ -16,7 +16,7 @@ exports.patchCommentById = (req, res, next) => {
   const { inc_votes } = req.body;
   modifyCommentById({ ...req.body, ...req.params })
     .then(comments => {
-      if ([comment_id] === "comments.comment_id")
+      if (comments.length > 0)
         return res.status(200).send({
           comment: comments[0]
         });
